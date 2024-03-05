@@ -5,25 +5,31 @@ using UnityEngine.UI;
 
 public class DialogueManager : MonoBehaviour
 {
+    public static HashSet<Dialogue> Dialogues = new();
     private Queue<string> sentences;
+    private Dialogue currentDialogue;
     public Text dialogueText;
+    public Text nameText;
 
     void Start()
     {
         sentences = new Queue<string>();
+        DontDestroyOnLoad(this);
     }
     
     public void StartDialogue(Dialogue dialogue)
     {
         Debug.Log($"Starting conversation with {dialogue.name}");
+        currentDialogue = dialogue;
         sentences.Clear();
         dialogueText.text = string.Empty;
+        nameText.text = "NPC";
 
         foreach (string sentence in dialogue.sentences)
         {
             sentences.Enqueue(sentence);
         }
-
+        
         DisplayNextSentence();
     }
     
@@ -52,5 +58,7 @@ public class DialogueManager : MonoBehaviour
     void EndDialogue()
     {
         Debug.Log("End of conversation");
+        currentDialogue.transition.SetTrigger("End");
+        currentDialogue = null;
     }
 }
